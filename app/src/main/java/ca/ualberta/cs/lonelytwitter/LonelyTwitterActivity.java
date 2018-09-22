@@ -80,12 +80,20 @@ public class LonelyTwitterActivity extends Activity {
 	private void saveInFile(String text, Date date) {
 		try {
 
-			ImportantTweet myTweet = new ImportantTweet("");
+			NormalTweet myTweet = new NormalTweet();
 			//myTweet.setMessage("I am looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong message");
-            myTweet.setMessage("Test");
+            myTweet.setMessage(text);
+
+            //Following lines are about mood classes
+            Mood angryMood = new Angry();
+            Mood happyMood = new Happy();
+            myTweet.addMoods(angryMood);
+            myTweet.addMoods(happyMood);
+
 			FileOutputStream fos = openFileOutput(FILENAME,
 					Context.MODE_APPEND);
-			fos.write(new String(date.toString() + " | " + text)
+			//changing tweet to store Tweet's message
+			fos.write(new String(date.toString() + " | " + myTweet.getMessage())
 					.getBytes());
 			fos.close();
 		} catch (FileNotFoundException e) {

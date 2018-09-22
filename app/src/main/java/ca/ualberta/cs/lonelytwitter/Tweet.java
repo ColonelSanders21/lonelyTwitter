@@ -1,12 +1,15 @@
 package ca.ualberta.cs.lonelytwitter;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public abstract class Tweet implements Tweetable {
 
     private Date date;
     private String message;
     private static final Integer MAX_CHARS = 140;
+    private List<Mood> moodList = new ArrayList<Mood>();
 
     //Empty argument constructor with default values
     Tweet() {
@@ -37,4 +40,15 @@ public abstract class Tweet implements Tweetable {
 
     //No method body implemented! We leave that up to the subclasses (they MUST implement it)
     public abstract Boolean isImportant();
+
+
+    //Appends mood to the list of moods
+    public void addMoods(Mood mood){
+        this.moodList.add(mood);
+    }
+
+    //getter method for moodList
+    public List<Mood> getMoodList(){
+        return moodList;
+    }
 }
