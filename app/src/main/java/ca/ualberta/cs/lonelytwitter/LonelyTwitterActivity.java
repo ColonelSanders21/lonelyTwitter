@@ -15,6 +15,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -63,7 +64,15 @@ public class LonelyTwitterActivity extends Activity {
 			public void onClick(View v) {
 				setResult(RESULT_OK);
 				tweetList.clear();
-				deleteFile(FILENAME);  // TODO deprecate this button
+				String searchString = bodyText.getText().toString();
+				try{
+					ArrayList<Tweet> searchTweetList = new ElasticsearchTweetController.GetTweetsTask().execute(searchString).get();
+					for(Tweet tweet: searchTweetList){
+					    tweetList.add(tweet);
+                    }
+				}catch(Exception e){
+					//This seems like terrible coding practice...
+				}
 				adapter.notifyDataSetChanged();
 			}
 		});
@@ -83,41 +92,5 @@ public class LonelyTwitterActivity extends Activity {
 		adapter = new ArrayAdapter<Tweet>(this,
 				R.layout.list_item, tweetList);
 		oldTweetsList.setAdapter(adapter);
-	}
-
-
-	private void loadFromFile() {
-		try {
-			FileInputStream fis = openFileInput(FILENAME);
-			BufferedReader in = new BufferedReader(new InputStreamReader(fis));
-			Gson gson = new Gson();
-			//Code taken from http://stackoverflow.com/questions/12384064/gson-convert-from-json-to-a-typed-arraylistt Sept.22,2016
-			Type listType = new TypeToken<ArrayList<NormalTweet>>(){}.getType();
-			tweetList = gson.fromJson(in, listType);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			tweetList = new ArrayList<Tweet>();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException();
-		}
-	}
-
-
-	private void saveInFile() {
-		try {
-
-			FileOutputStream fos = openFileOutput(FILENAME,0);
-			OutputStreamWriter writer = new OutputStreamWriter(fos);
-			Gson gson = new Gson();
-			gson.toJson(tweetList, writer);
-			writer.flush();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException();
-		}
 	}
 }

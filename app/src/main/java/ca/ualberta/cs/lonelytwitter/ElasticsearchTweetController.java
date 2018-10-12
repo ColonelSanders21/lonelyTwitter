@@ -1,6 +1,7 @@
 package ca.ualberta.cs.lonelytwitter;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.searchly.jestdroid.DroidClientConfig;
 import com.searchly.jestdroid.JestClientFactory;
@@ -30,14 +31,21 @@ public class ElasticsearchTweetController {
             client =(JestDroidClient) factory.getObject();
         }
     }
-
     public static class GetTweetsTask extends AsyncTask<String, Void, ArrayList<Tweet>>{
 
         @Override
         protected ArrayList<Tweet> doInBackground(String... params){
             setClient();
+            String query;
+            if(params[0].equals("")){
+                //Case where we want all tweets
+                query = params[0];
+            }
+            else {
+                query = "{\"query\": {\"match\": {\"message\": \" " + params[0] + "\"}}}";
+            }
             ArrayList<Tweet> tweets = new ArrayList<Tweet>();
-            Search search = new Search.Builder(params[0])
+            Search search = new Search.Builder(query)
                     .addIndex("shaiful-thursday")
                     .addType("tweet")
                     .build();
